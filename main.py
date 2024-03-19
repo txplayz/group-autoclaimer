@@ -32,8 +32,20 @@ async def start() -> tuple[str, int, str, dict, str, str, list, list, bool]:
     generate_logo()
     for text in texts:
         generate_text(text, 0)
-        
-    await send_webhook({"content": f"succesfully loaded in {round(end_time - start_time, 4)} seconds as `{user_account['username']}` *({user_account['user_id']})*!"}) 
+        embed_payload = {
+        "embeds": [
+            {
+                "title": "Loading Completed",
+                "description": f"Successfully loaded in {round(end_time - start_time, 4)} seconds as `{user_account['username']}`!",
+                "color": 10640584,  # Color in decimal format (optional)
+                "footer": {
+                    "text": "furry autoclaimer rewrited™"
+                }
+            }
+        ]
+    }
+
+    await send_webhook(embed_payload) 
     
     if data["debug"]["enable"] == True:
         if data["debug"]["showDiscordHandler"] == True:
@@ -207,13 +219,37 @@ async def on_message(msg):
     
                     if claim_attempt["claim"]["status_code"] == 403:
                         generate_text(f"failed to claim {round(claim_attempt['time'], 4)}, because someone was faster", 0)
+                        embed_slow = {
+        "embeds": [
+            {
+                "title": "Mehhovcki Autoclaimer",
+                "description": f"Succesfully **failed** to autoclaim `{group_id}` in **{round(claim_attempt['time'], 4)} seconds**, because someone got it faster.",
+                "color": 10640584,  # Color in decimal format (optional)
+                "footer": {
+                    "text": "furry autoclaimer rewrited™"
+                }
+            }
+        ]
+    }
                         await asyncio.gather(
-                            send_webhook({"content": f"succesfully **failed** to autoclaim `{group_id}` in **{round(claim_attempt['time'], 4)} seconds**, because someone got it faster."}),
+                            send_webhook(embed_slow),
                         )
                     elif claim_attempt["claim"]["status_code"] in [400, 500]:
                         generate_text(f"failed to claim {round(claim_attempt['time'], 4)}, because roblox did their woopsies ({claim_attempt['claim']['status_code']})", 0)
+                        embed_woopsies = {
+        "embeds": [
+            {
+                "title": "Mehhovcki Autoclaimer",
+                "description": f"Succesfully **failed** to autoclaim `{group_id}` in **{round(claim_attempt['time'], 4)} seconds**, because Roblox did their fuck up! :3 ({claim_attempt['claim']['status_code']})",
+                "color": 10640584,  # Color in decimal format (optional)
+                "footer": {
+                    "text": "furry autoclaimer rewrited™"
+                }
+            }
+        ]
+    }
                         await asyncio.gather(
-                            send_webhook({"content": f"succesfully **failed** to autoclaim `{group_id}` in **{round(claim_attempt['time'], 4)} seconds**, because Roblox did their fuck up! :3 ({claim_attempt['claim']['status_code']})"}),
+                            send_webhook(embed_woopsies),
                         )
                     elif claim_attempt["claim"]["status_code"] == 429:
                         generate_text(f"failed to claim {round(claim_attempt['time'], 4)}, because ratelimit. account hopping", 0)
@@ -229,7 +265,19 @@ async def on_message(msg):
 
                 if claim_attempt["join"]["status_code"] == 429:
                     generate_text(f"failed to claim {round(claim_attempt['time'], 4)}, because someone ratelimit. account hopping.", 0)
-                    await send_webhook({"content": f"succesfully **failed** to autoclaim `{group_id}` in **{round(claim_attempt['time'], 4)} seconds**, because caught ratelimit. account-hopping!"}),
+                    embed_ratelimit = {
+        "embeds": [
+            {
+                "title": "Mehhovcki Autoclaimer",
+                "description": f"Succesfully **failed** to autoclaim `{group_id}` in **{round(claim_attempt['time'], 4)} seconds**, because caught ratelimit. account-hopping!",
+                "color": 10640584,  # Color in decimal format (optional)
+                "footer": {
+                    "text": "furry autoclaimer rewrited™"
+                }
+            }
+        ]
+    }
+                    await send_webhook(embed_ratelimit),
                     claimed_attempts = 0
                     username, user_id, cookie, headers = await new_account()
                 if claim_attempt["join"]["status_code"] == 403:
@@ -238,7 +286,19 @@ async def on_message(msg):
                             generate_text(f"failed to claim {round(claim_attempt['time'], 4)}, because group is closed", 0)
                         elif claim_attempt["join"]["json"]["errors"][0]["message"] == "You are already in the maximum number of groups.":
                             generate_text(f"{username} is currently full!", 0)
-                            await send_webhook({"content": f"succesfully **failed** to autoclaim `{group_id}` in **{round(claim_attempt['time'], 4)} seconds**, because account is full *||{cookie[:150]}||*"})
+                            embed_full = {
+        "embeds": [
+            {
+                "title": "Mehhovcki Autoclaimer",
+                "description": f"Succesfully **failed** to autoclaim `{group_id}` in **{round(claim_attempt['time'], 4)} seconds**, because account is full *||{cookie[:150]}||*",
+                "color": 10640584,  # Color in decimal format (optional)
+                "footer": {
+                    "text": "furry autoclaimer rewrited™"
+                }
+            }
+        ]
+    }
+                            await send_webhook(embed_full)
                             with open('files/full.txt', 'a') as f:
                                 f.write(cookie + '\n')
                                 f.close()
