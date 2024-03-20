@@ -132,8 +132,8 @@ async def on_message(msg):
                     await ctx.edit(f"Only client owners can use this command.")
 
             elif message.content.lower().startswith(f"{prefix}help"):
-                await ctx.edit(f"```> {prefix}help >> shows this command\n{prefix}finder [add/remove] [channel-id] >> adds, or removes channel from claiming [OWNERONLY]\n{prefix}trust [user-id] >> adds user to trusted. allows them use this client. [OWNERONLY]\n{prefix}prefix [new-prefix] >> changes prefix\n{prefix}data >> shows trusted, claiming channels and current account [OWNERONLY]\n{prefix}groups >> shows how many groups user owns```")
-            
+                await ctx.edit(f"```> {prefix}help >> shows this command\n{prefix}finder [add/remove] [channel-id] >> adds, or removes channel from claiming [OWNERONLY]\n{prefix}trust [user-id] >> adds user to trusted. allows them use this client. [OWNERONLY]\n{prefix}prefix [new-prefix] >> changes prefix\n{prefix}data >> shows trusted, claiming channels and current account [OWNERONLY]\n{prefix}groups >> shows how many groups user owns\n{prefix}addcookie [cookie] >> adds cookie to list of cookies [OWNERONLY]\n{prefix}switch >> switches to another cookie [OWNERONLY]```")
+
             elif message.content.lower().startswith(f"{prefix}data"):
                 await ctx.edit(f"```user: {username}\nuID: {user_id}\nclaiming: {claiming_channels}\ntrusted: {trusted}```")
             
@@ -148,6 +148,20 @@ async def on_message(msg):
                     for group_id in unclaim:
                         leave_attempt = await leave_group(group_id, user_id, headers)
                         await message.edit(message.content + "\n" + str(leave_attempt))
+
+            elif message.content.lower().startswith(f"{prefix}addcookie"):
+                if len(split) > 1:
+                    cookie = split[1]
+
+                    with open("files/cookies.txt", "a") as file:
+                        file.write(cookie + "\n")
+                    file.close()
+
+                    await ctx.add_reaction("✅")
+            
+            elif message.content.lower().startswith(f"{prefix}switch"):
+                if message.author.id == client.user.id or message.author.id in trusted:
+                    username, user_id, cookie, headers = await new_account()
 
             if claiming_channels != body["claiming_channels"] or trusted != body["trusted"] or prefix != body["prefix"]:
                 claiming_channels = body["claiming_channels"]
